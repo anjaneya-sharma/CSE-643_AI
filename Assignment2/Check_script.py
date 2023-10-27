@@ -1,5 +1,3 @@
-# MADE BY ANJANEYA SHARMA
-# ROLL NUMBER : 202144
 
 import pandas as pd
 
@@ -11,6 +9,8 @@ from collections import deque
 df  = pd.read_csv('Road_Distance.csv')
 
 cities = set()
+
+
 
 
 def Return_Adj():
@@ -32,6 +32,8 @@ def Return_Adj():
                 adjacency_list[current_city][adjacent_city] = distance
                 adjacency_list[adjacent_city][current_city] = distance
 
+    
+    
     return adjacency_list
 
 Open = [] 
@@ -52,14 +54,14 @@ def calculate_heuristic( start, end, adj_lst, ind):
         if current == end and ind == 0:
             return 0
         elif current == end and ind == 1:
-            return distance - 200
+            return distance - 190
         elif current == end and ind == 2:
-            return distance + 10000
+            return distance + 100000
         visited.add(current)
         for neighbor, cost in adj_lst[current].items():
             if neighbor not in visited:
                 queue.append((neighbor, distance + cost))
-    return float('inf')  # in case of absence of a path
+    return float('inf')  # If no path is found
 
 
 
@@ -102,45 +104,25 @@ def Astar( start, end  ,  adj_lst, heur):
 
     return None
 
+adj_lst = Return_Adj()
 
+cities = list(cities)
 
-def main():
-    adjacency_list = Return_Adj()
-    
-    START = input("Enter the starting city : ")
-    END = input("Enter the ending city : ")
-    
-    
-    while True :
+for i in range(len(cities)-1):
+    for j in range(i+1,len(cities)):
+        path_Astar_admissible = Astar(cities[i],cities[j],adj_lst,0)
+        path_Astar_inadmissible = Astar(cities[i],cities[j],adj_lst,1)
+        path_Astar_ucs = Astar(cities[i],cities[j],adj_lst,2)
         
-        
-        print("1) A star algorithm ")
-        print("2) Uniform Cost Search algorithm")
-        print("3) Exit")
-        
-        
-        op = int(input("Enter one of the two above options (1/2) :"))
-        
-        if op == 1 : 
-            Heur = int(input("Enter the heuristic you want the algorithm to run with (Admissible - 1 / Inadmissible - 2) :"))
-            pth = Astar( START , END , adjacency_list , Heur  )
-            print(pth)        
-
+        if path_Astar_admissible == path_Astar_inadmissible :
+            continue
+        else :
+            print("Paths not matching here")
+            print("path_Astar_admissible",path_Astar_admissible)
+            print("path_Astar_inadmissible",path_Astar_inadmissible)
+            # print("path_Astar_ucs",path_Astar_ucs)
             
-        elif op == 2 : 
-            pth = Astar(START , END ,  adjacency_list ,0 )
-            print(pth)
-        
-        elif op == 3 :
-            break
-
-    
-
-
-if __name__ == "__main__":
-    main()
-    
-
-
-
-
+            
+            
+            
+            
