@@ -132,7 +132,7 @@ def main():
         if op == 1 : 
             Heur = int(input("Enter the heuristic you want the algorithm to run with (Admissible - 1 / Inadmissible - 2) :"))
             pth,pc = Astar( START , END , adjacency_list , Heur  )
-            print(pth)       
+            # print(pth)       
             print(f"Path from {START} to {END} is : ",pth)
             print("")
             print(f"Cost from travelling from {START} to {END} is " , pc)
@@ -141,7 +141,7 @@ def main():
             
         elif op == 2 : 
             pth,pc = Astar(START , END ,  adjacency_list ,0 )
-            print(pth)
+            # print(pth)
             print(f"Path from {START} to {END} is : ",pth)
             print("")
             print(f"Cost from travelling from {START} to {END} is " , pc)
