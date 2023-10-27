@@ -1,7 +1,9 @@
-# MADE BY ANJANEYA SHARMA
+# ANJANEYA SHARMA
 # ROLL NUMBER : 202144
 
 import pandas as pd
+
+import math
 
 import csv
 
@@ -42,8 +44,8 @@ Close = []
 # g_val={}
 
 def calculate_heuristic( start, end, adj_lst, ind):
-    if start == end:
-        return 0
+    # if start == end:
+    #     return 0
 
     visited = set()
     queue = deque([(start, 0)])
@@ -52,9 +54,9 @@ def calculate_heuristic( start, end, adj_lst, ind):
         if current == end and ind == 0:
             return 0
         elif current == end and ind == 1:
-            return distance - 200
+            return math.sqrt(distance)
         elif current == end and ind == 2:
-            return distance + 10000
+            return distance**2
         visited.add(current)
         for neighbor, cost in adj_lst[current].items():
             if neighbor not in visited:
@@ -85,7 +87,13 @@ def Astar( start, end  ,  adj_lst, heur):
                 path.append(current)
                 current = parents[current]
             path.reverse()
-            return path
+
+            pc = 0
+
+            for i in range(len(path)-1):
+                pc+=adj_lst[path[i]][path[i+1]]
+            
+            return path,pc
 
         open_list.remove(current)
         closed_list.append(current)
@@ -100,7 +108,7 @@ def Astar( start, end  ,  adj_lst, heur):
                 parents[neighbor] = current
                 g_values[neighbor] = tentative_g
 
-    return None
+    return None , None
 
 
 
@@ -123,13 +131,21 @@ def main():
         
         if op == 1 : 
             Heur = int(input("Enter the heuristic you want the algorithm to run with (Admissible - 1 / Inadmissible - 2) :"))
-            pth = Astar( START , END , adjacency_list , Heur  )
-            print(pth)        
+            pth,pc = Astar( START , END , adjacency_list , Heur  )
+            print(pth)       
+            print(f"Path from {START} to {END} is : ",pth)
+            print("")
+            print(f"Cost from travelling from {START} to {END} is " , pc)
+            print("\n")
 
             
         elif op == 2 : 
-            pth = Astar(START , END ,  adjacency_list ,0 )
+            pth,pc = Astar(START , END ,  adjacency_list ,0 )
             print(pth)
+            print(f"Path from {START} to {END} is : ",pth)
+            print("")
+            print(f"Cost from travelling from {START} to {END} is " , pc)
+            print("\n")
         
         elif op == 3 :
             break

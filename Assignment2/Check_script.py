@@ -1,7 +1,8 @@
-
 import pandas as pd
 
 import csv
+
+import math
 
 from collections import deque
 
@@ -9,8 +10,6 @@ from collections import deque
 df  = pd.read_csv('Road_Distance.csv')
 
 cities = set()
-
-
 
 
 def Return_Adj():
@@ -32,8 +31,6 @@ def Return_Adj():
                 adjacency_list[current_city][adjacent_city] = distance
                 adjacency_list[adjacent_city][current_city] = distance
 
-    
-    
     return adjacency_list
 
 Open = [] 
@@ -44,9 +41,13 @@ Close = []
 # g_val={}
 
 def calculate_heuristic( start, end, adj_lst, ind):
-    if start == end:
-        return 0
-
+    # if start == end and ind == 0:
+    #     return 0
+    # elif start == end and ind == 1:
+    #     return -500
+    # elif start == end and ind == 2:
+    #     return 10000
+        
     visited = set()
     queue = deque([(start, 0)])
     while queue:
@@ -54,14 +55,14 @@ def calculate_heuristic( start, end, adj_lst, ind):
         if current == end and ind == 0:
             return 0
         elif current == end and ind == 1:
-            return distance - 190
+            return math.sqrt(distance)
         elif current == end and ind == 2:
-            return distance + 100000
+            return distance**2
         visited.add(current)
         for neighbor, cost in adj_lst[current].items():
             if neighbor not in visited:
                 queue.append((neighbor, distance + cost))
-    return float('inf')  # If no path is found
+    return float('inf')  # in case of absence of a path
 
 
 
@@ -87,7 +88,13 @@ def Astar( start, end  ,  adj_lst, heur):
                 path.append(current)
                 current = parents[current]
             path.reverse()
-            return path
+
+            pc = 0
+
+            for i in range(len(path)-1):
+                pc+=adj_lst[path[i]][path[i+1]]
+            
+            return path,pc
 
         open_list.remove(current)
         closed_list.append(current)
@@ -102,27 +109,45 @@ def Astar( start, end  ,  adj_lst, heur):
                 parents[neighbor] = current
                 g_values[neighbor] = tentative_g
 
-    return None
+    return None , None
+
 
 adj_lst = Return_Adj()
 
 cities = list(cities)
 
+cnt = 0
+
+
 for i in range(len(cities)-1):
     for j in range(i+1,len(cities)):
-        path_Astar_admissible = Astar(cities[i],cities[j],adj_lst,0)
-        path_Astar_inadmissible = Astar(cities[i],cities[j],adj_lst,1)
-        path_Astar_ucs = Astar(cities[i],cities[j],adj_lst,2)
+       
+        path_Astar_admissible , pac = Astar(cities[i],cities[j],adj_lst,1)
+        path_Astar_inadmissible , piac= Astar(cities[i],cities[j],adj_lst,2)
+        path_Astar_ucs , pucs = Astar(cities[i],cities[j],adj_lst,0)
         
-        if path_Astar_admissible == path_Astar_inadmissible :
+        # if path_Astar_admissible == path_Astar_inadmissible :
+        #     continue
+        # else :
+        #     print("Paths not matching here")
+        #     print("path_Astar_admissible",path_Astar_admissible)
+        #     print("path_Astar_inadmissible",path_Astar_inadmissible)
+        #     # print("path_Astar_ucs",path_Astar_ucs)
+            
+        if pac <= piac :
+            print("Cost optimized")
             continue
         else :
-            print("Paths not matching here")
+            cnt+=1
+            print("Cost not optimal here")
             print("path_Astar_admissible",path_Astar_admissible)
             print("path_Astar_inadmissible",path_Astar_inadmissible)
             # print("path_Astar_ucs",path_Astar_ucs)
+            print("Costs of the two are ",pac,piac)
             
             
             
             
+print("Number of problamatic cases",cnt)           
             
+            # 1497  , 
